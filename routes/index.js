@@ -3,14 +3,14 @@ const router = express.Router();
 const axios = require("axios");
 const config = require("config");
 
-router.post('/get_businesses', (req, res) => {
-  let { location } = req.body 
+const checkCache = require("../middleware/cache");
 
-  if (!location) {
-    location = 'NYC'
-  }
+router.post('/get_businesses', checkCache, (req, res) => {
+  let location = req.location;
 
-  location = location.replace(' ', '+')
+  console.log(location);
+
+  location = location.replace(' ', '+');
 
   let yelpURL = 'https://api.yelp.com/v3/businesses/search?term=restaurants&location=' + location
 
@@ -23,7 +23,7 @@ router.post('/get_businesses', (req, res) => {
     } 
   })
     .then(result => {
-      let names = result.data.businesses.map(business => business["name"]);
+      names = result.data.businesses.map(business => business["name"]);
       res.json(names);
     })
     .catch(e => {
