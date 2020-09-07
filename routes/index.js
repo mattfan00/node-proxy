@@ -3,16 +3,17 @@ const router = express.Router();
 const axios = require("axios");
 const config = require("config");
 
+const redis = require("redis");
+const client = redis.createClient();
+
 const checkCache = require("../middleware/cache");
 
 router.post('/get_businesses', checkCache, (req, res) => {
   let location = req.location;
 
-  console.log(location);
+  let locationURL = location.replace(' ', '+');
 
-  location = location.replace(' ', '+');
-
-  let yelpURL = 'https://api.yelp.com/v3/businesses/search?term=restaurants&location=' + location
+  let yelpURL = 'https://api.yelp.com/v3/businesses/search?term=restaurants&location=' + locationURL 
 
   axios({
     method: 'GET', 
@@ -24,6 +25,8 @@ router.post('/get_businesses', checkCache, (req, res) => {
   })
     .then(result => {
       names = result.data.businesses.map(business => business["name"]);
+      client.rpush(location, names);
+      client.expire(location, 5);
       res.json(names);
     })
     .catch(e => {

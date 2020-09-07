@@ -9,9 +9,19 @@ function checkCache(req, res, next) {
   }
 
   location = location.toLowerCase();
+  // client.flushdb();
 
-  req.location = location;
-  next();
+  console.log(location);
+  client.lrange(location, 0, -1, (err, results) => {
+    if (results.length == 0) {
+      req.location = location;
+      console.log("call api");
+      next();
+    } else {
+      console.log("access cache");
+      return res.json(results);
+    }
+  })
 }
 
 module.exports = checkCache;
