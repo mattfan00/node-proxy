@@ -17,4 +17,5 @@ It only has one POST endpoint `/get_businesses` which takes in the field `locati
         }
         ```
 
-1. Start the server with `nodemon` by using `npm run start`
+1. Start the redis server with `redis-server`
+1. Start the proxy server with `nodemon` by using `npm run start`
