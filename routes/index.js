@@ -2,13 +2,19 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 const config = require("config");
+const rateLimit = require("express-rate-limit");
 
 const redis = require("redis");
 const client = redis.createClient();
 
 const checkCache = require("../middleware/cache");
 
-router.post('/get_businesses', checkCache, (req, res) => {
+const apiLimiter = rateLimit({
+  windowMs: config.get("rateLimit") * 1000, // 30 seconds
+  max: 2
+})
+
+router.post('/get_businesses', checkCache, apiLimiter, (req, res) => {
   let location = req.location;
 
   let locationURL = location.replace(' ', '+');
@@ -26,7 +32,7 @@ router.post('/get_businesses', checkCache, (req, res) => {
     .then(result => {
       names = result.data.businesses.map(business => business["name"]);
       client.rpush(location, names);
-      client.expire(location, 5);
+      client.expire(location, config.get('expireTime'));
       res.json(names);
     })
     .catch(e => {
