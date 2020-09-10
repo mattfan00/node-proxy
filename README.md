@@ -9,13 +9,13 @@ It only has one POST endpoint `/get_businesses` which takes in the field `locati
 1. Use `npm install` to get the dependencies
 1. This project utilizes a `config` file to store the Yelp API key, the rate limiting (in seconds), and cache expire time (in seconds). Create a directory called config and a file called default.json within it. Below is an example of the contents in default.json
 
-        ```js
-        {
-          "yelpKey": "your_api_key",
-          "rateLimit": 30,
-          "expireTime": 5
-        }
-        ```
+      ```js
+      {
+        "yelpKey": "your_api_key",
+        "rateLimit": 30,
+        "expireTime": 5
+      }
+      ```
 
 1. Start the redis server with `redis-server`
 1. Start the proxy server with `nodemon` by using `npm run start`
